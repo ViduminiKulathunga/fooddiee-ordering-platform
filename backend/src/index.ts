@@ -10,7 +10,14 @@ mongoose
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.options("*", cors()); // Allow all OPTIONS requests
+
+// When hosting
+// const corsOptions = {
+//   origin: "https://myapp.com", // Replace with your frontend's production URL
+//   credentials: true,
+// };
+// app.use(cors(corsOptions)); // Apply the CORS settings globally
 
 app.use("/api/my/user", myUserRoute);
 
