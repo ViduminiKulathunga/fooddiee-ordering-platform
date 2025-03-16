@@ -19,6 +19,14 @@ app.options("*", cors()); // Allow all OPTIONS requests
 // };
 // app.use(cors(corsOptions)); // Apply the CORS settings globally
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use("/api/my/user", myUserRoute);
 
 const port = 4000;

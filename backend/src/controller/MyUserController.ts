@@ -28,7 +28,7 @@ export const updateCurrentUser = async (
   res: Response
 ): Promise<any> => {
   try {
-    const { name, addressLine1, country, city } = req.body;
+    const { name, address, country, city } = req.body;
 
     const user = await User.findById(req.userId);
 
@@ -37,13 +37,13 @@ export const updateCurrentUser = async (
     }
 
     user.name = name;
-    user.address = addressLine1;
+    user.address = address;
     user.country = country;
     user.city = city;
 
     await user.save();
 
-    return res.send(user);
+    return res.status(200).json({ data: user });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error updating user" });
