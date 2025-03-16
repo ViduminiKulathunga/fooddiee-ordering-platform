@@ -1,5 +1,6 @@
+import { User } from "@/types";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueries } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -27,7 +28,6 @@ export const UserCreateMyUser = () => {
       throw new Error("Failed to create user");
     }
     const data = await response.json();
-
     return data;
   };
 
@@ -97,4 +97,43 @@ export const useUpdateMyUser = () => {
   }
 
   return { updateUser, isPending };
+};
+
+export const useGetMyUser = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  const getMyUserRequest = async (): Promise<User> => {
+    const accessToken = await getAccessTokenSilently();
+    const response = await fetch(`${API_BASE_URL}/api/my/user`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create user");
+    }
+
+    const data = await response.json();
+    return data;
+  };
+
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: ["fetchCurrentUser"],
+        queryFn: getMyUserRequest,
+      },
+    ],
+  });
+
+  const { data: currentUser, isPending, error } = queries[0];
+
+  if (error) {
+    toast.error(error.toString());
+  }
+
+  return { currentUser, isPending };
 };
